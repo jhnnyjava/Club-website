@@ -1,0 +1,182 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model for authentication
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?   // Hashed password for email/password auth
+  phone         String?   // M-Pesa phone number
+  role          UserRole  @default(MEMBER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  membership    Membership?
+  payments      Payment[]
+  
+  @@index([email])
+}
+
+enum UserRole {
+  MEMBER
+  ADMIN
+  SUPER_ADMIN
+}
+
+// NextAuth Account model
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+// NextAuth Session model
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// NextAuth Verification Token model
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Membership model
+model Membership {
+  id          String           @id @default(cuid())
+  userId      String           @unique
+  status      MembershipStatus @default(PENDING)
+  startedAt   DateTime?
+  expiresAt   DateTime?
+  renewalSent Boolean          @default(false) // Track if renewal reminder sent
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([expiresAt])
+}
+
+enum MembershipStatus {
+  PENDING   // Awaiting payment
+  ACTIVE    // Paid and active
+  EXPIRED   // Past expiry date
+  CANCELLED // Manually cancelled
+}
+
+// Payment model
+model Payment {
+  id                String        @id @default(cuid())
+  userId            String
+  amount            Float
+  currency          String        @default("KES")
+  type              PaymentType
+  status            PaymentStatus @default(PENDING)
+  
+  // M-Pesa specific fields
+  phoneNumber       String
+  merchantRequestId String?       @unique
+  checkoutRequestId String?       @unique
+  mpesaReceiptNumber String?      @unique
+  transactionDate   DateTime?
+  
+  // Additional metadata
+  description       String?
+  failureReason     String?
+  metadata          Json?         // For storing additional data
+  
+  // Idempotency
+  idempotencyKey    String?       @unique
+  callbackReceived  Boolean       @default(false)
+  callbackAt        DateTime?
+  
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@index([checkoutRequestId])
+  @@index([merchantRequestId])
+}
+
+enum PaymentType {
+  MEMBERSHIP // Initial 500 KES membership
+  RENEWAL    // 250 KES renewal
+}
+
+enum PaymentStatus {
+  PENDING    // Payment initiated, awaiting callback
+  SUCCESS    // Payment successful
+  FAILED     // Payment failed
+  CANCELLED  // Payment cancelled by user
+  TIMEOUT    // STK push timeout
+}
+
+// Email log for tracking sent emails
+model EmailLog {
+  id          String    @id @default(cuid())
+  to          String
+  subject     String
+  template    String
+  status      String    // sent, failed
+  error       String?
+  sentAt      DateTime  @default(now())
+  metadata    Json?
+
+  @@index([to])
+  @@index([template])
+}
+
+// Admin activity log
+model AdminLog {
+  id          String   @id @default(cuid())
+  adminEmail  String
+  action      String
+  targetId    String?  // User ID or Payment ID
+  description String
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  @@index([adminEmail])
+  @@index([createdAt])
+}
