@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
 
     // Initiate STK Push
     const stkResponse = await mpesaService.initiateSTKPush({
-      phoneNumber: phone,
+      phoneNumber: phoneNumber,
       amount,
       accountReference: `IEC-${session.user.id}`,
       transactionDesc: type === 'MEMBERSHIP' ? 'IEC Membership Payment' : 'IEC Membership Renewal',

@@ -2,7 +2,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'text';
+  variant?: 'primary' | 'secondary' | 'text' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
   children: React.ReactNode;
 }
@@ -14,12 +14,13 @@ export function Button({
   children, 
   ...props 
 }: ButtonProps) {
-  const baseStyles = 'font-semibold rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed';
+  const baseStyles = 'font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center';
   
   const variants = {
-    primary: 'bg-ice-cyan hover:bg-cyan-300 text-ice-black shadow-cyan-glow hover:shadow-cyan-glow-lg',
-    secondary: 'border border-slate-700 hover:bg-slate-800 text-ice-white hover:border-slate-600',
-    text: 'text-ice-white hover:text-ice-cyan underline-offset-4 hover:underline',
+    primary: 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105',
+    secondary: 'glass-card hover:glass-card-hover text-white border border-white/10',
+    ghost: 'hover:bg-white/5 text-slate-300 hover:text-white',
+    text: 'text-white hover:text-blue-400 underline-offset-4 hover:underline',
   };
   
   const sizes = {

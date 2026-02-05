@@ -1,53 +1,81 @@
-# IEC JKUAT - Innovation and Entrepreneurship Club Membership Platform
+# IEC JKUAT - Innovation and Entrepreneurship Club
 
-A modern, production-ready membership management system for the Innovation and Entrepreneurship Club at JKUAT. Features M-Pesa payment integration, automated renewal reminders, and comprehensive admin controls.
+Modern membership platform for the Innovation and Entrepreneurship Club at JKUAT. Features M-Pesa payment integration, automated renewal reminders, and comprehensive admin controls.
 
-![Next.js](https://img.shields.io/badge/Next.js-14+-black)
+![Next.js](https://img.shields.io/badge/Next.js-16+-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5+-blue)
-![Prisma](https://img.shields.io/badge/Prisma-7+-green)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind-3+-cyan)
+![Prisma](https://img.shields.io/badge/Prisma-5+-green)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-4+-cyan)
 
-## 🚀 Features
+## Features
 
-### User Features
-- **Authentication**: Email/password and Google OAuth support
-- **M-Pesa Payments**: Seamless STK Push integration
-- **Membership Management**: 500 KES initial fee, 250 KES renewal
-- **Auto Renewal Reminders**: Sent 30 days before expiry
-- **Payment History**: Track all transactions with receipts
-- **Dashboard**: View membership status and manage account
+- **Authentication**: Email/password and Google OAuth
+- **M-Pesa Payments**: STK Push integration
+- **Membership**: 500 KES initial, 250 KES renewal
+- **Admin Dashboard**: Member and payment management
+- **Automated Emails**: Renewal reminders via SendGrid
+- **Responsive Design**: Works on all devices
 
-### Admin Features
-- **Member Management**: View and manage all members
-- **Payment Reconciliation**: Track and verify payments
-- **Analytics Dashboard**: Revenue, active members, expiring memberships
-- **Manual Controls**: Adjust memberships, resend invoices
-- **Activity Logs**: Comprehensive audit trail
-
-### Technical Features
-- **Secure Authentication**: bcrypt password hashing, JWT sessions
-- **Payment Webhooks**: Idempotent callback handling
-- **Rate Limiting**: Protection against abuse
-- **Email Notifications**: Transactional emails via SendGrid
-- **Cron Jobs**: Automated membership expiry checks
-- **SEO Optimized**: Meta tags, semantic HTML, accessibility
-- **Responsive Design**: Mobile-first approach
-
-## 📋 Prerequisites
-
-- Node.js 18+ and npm
-- PostgreSQL database
-- M-Pesa Daraja API credentials (sandbox or production)
-- SendGrid account (optional, for emails)
-- Vercel account (for deployment)
-
-## 🛠️ Installation
-
-### 1. Clone the repository
+## Quick Start
 
 ```bash
-git clone https://github.com/yourusername/iec-jkuat.git
-cd iec-jkuat
+# Install dependencies
+npm install
+
+# Setup environment
+cp .env.example .env
+# Edit .env with your credentials
+
+# Setup database
+npx prisma db push
+
+# Start development
+npm run dev
+```
+
+Visit http://localhost:3000
+
+## Tech Stack
+
+- Next.js 16 + TypeScript
+- Prisma + PostgreSQL
+- NextAuth.js
+- Tailwind CSS
+- M-Pesa Daraja API
+- SendGrid
+
+## Deployment
+
+### Vercel (Recommended)
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+vercel
+```
+
+Or connect your GitHub repo to Vercel dashboard for automatic deployments.
+
+### Environment Variables
+
+Required for production:
+- `DATABASE_URL` - PostgreSQL connection string
+- `NEXTAUTH_SECRET` - Generate with `openssl rand -base64 32`
+- `NEXTAUTH_URL` - Your production URL
+- `MPESA_*` - M-Pesa credentials
+- `SENDGRID_API_KEY` - Email service key
+
+See `.env.example` for full list.
+
+## License
+
+MIT
+
+## Contact
+
+iecjkuat@gmail.com
 ```
 
 ### 2. Install dependencies
